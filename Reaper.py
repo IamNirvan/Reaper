@@ -3,7 +3,7 @@ from cryptography.fernet import Fernet
 
 targets = []
 
-# This is main
+# This is the new Reaper.
 
 def generate_key():
     key = Fernet.generate_key()
