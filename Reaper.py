@@ -44,5 +44,4 @@ class Reaper:
         self.encrypt(key)
 
 
-reaper = Reaper()
-reaper.start()
+Reaper().start()
