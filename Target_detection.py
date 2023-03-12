@@ -1,6 +1,7 @@
 import os
 from Victim import Victim
 
+
 class Target_detection:
     def __init__(self, victim):
         self.target_path = victim.get_target_dir()

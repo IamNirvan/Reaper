@@ -1,5 +1,4 @@
 from cryptography.fernet import Fernet
-from threading import Thread
 
 
 def get_key():
@@ -7,7 +6,7 @@ def get_key():
         return key_file.read()
 
 
-class Saviour(Thread):
+class Saviour:
     def __init__(self, targeted_files):
         super().__init__()
         self.targets = targeted_files
