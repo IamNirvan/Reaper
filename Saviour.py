@@ -1,6 +1,6 @@
-import os
 from cryptography.fernet import Fernet
 from threading import Thread
+
 
 def get_key():
     with open("key.key", "rb") as key_file:
@@ -8,38 +8,35 @@ def get_key():
 
 
 class Saviour(Thread):
-    targets = []
+    def __init__(self, targeted_files):
+        super().__init__()
+        self.targets = targeted_files
 
-    def gather_targets(self, path=os.getcwd()):
-        for file in os.scandir(path):
-            name = file.path.split("\\")[-1]
+    def decrypt(self, key):
+        try:
+            for file in self.targets:
+                with open(file, "rb") as target_file:
+                    cipher = target_file.read()
+                    plain_text = Fernet(key).decrypt(cipher)
 
-            if name == "Reaper.py" or name == "key.key" or name == "Saviour.py":
-                continue
+                with open(file, "wb") as target_file:
+                    target_file.write(plain_text)
 
-            if file.is_dir():
-                if name == "venv" or name == ".git" or name == "inspectionProfiles" or name == ".idea":
-                    continue
-                self.gather_targets(file)
+        except Exception as e:
+            print(f"An error occurred:\n\t{e.__str__()}")
 
-            else:
-                self.targets.append(file.path)
-
-    def decrypt(self, key_to_decrypt):
-        for file in self.targets:
-            with open(file, "rb") as target_file:
-                cipher = target_file.read()
-                plain_text = Fernet(key_to_decrypt).decrypt(cipher)
-
-            with open(file, "wb") as target_file:
-                target_file.write(plain_text)
-
-        print("Done.")
 
     def run(self):
         key = get_key()
-        self.gather_targets()
         self.decrypt(key)
 
 
-Saviour().start()
+if __name__ == "__main__":
+    # targets = ['C:\\Users\\Shalin\\Documents\\3_Python\\Python_projects\\Reaper\\test files\\document.docx',
+    #            'C:\\Users\\Shalin\\Documents\\3_Python\\Python_projects\\Reaper\\test files\\main.py',
+    #            'C:\\Users\\Shalin\\Documents\\3_Python\\Python_projects\\Reaper\\test files\\quaterlyStats.elsx',
+    #            'C:\\Users\\Shalin\\Documents\\3_Python\\Python_projects\\Reaper\\test files\\recipies.txt',
+    #            'C:\\Users\\Shalin\\Documents\\3_Python\\Python_projects\\Reaper\\test files\\private\\searches.txt',
+    #            'C:\\Users\\Shalin\\Documents\\3_Python\\Python_projects\\Reaper\\test files\\private\\sdcs\\Doodoo']
+
+    Saviour(targets).start()

