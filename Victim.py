@@ -8,6 +8,7 @@ class Victim:
         self.processor = platform.processor()
         self.machine = platform.machine()
         self.username = self.get_username()
+        self.processor_count = self.get_processor_count()
 
     def __str__(self):
         print(f"System: {self.system}")
@@ -28,3 +29,10 @@ class Victim:
             return rf"/home/{self.username}/Documents"
         elif self.system == "Windows":
             return rf"C:\Users\{self.username}\Documents"
+
+    def get_processor_count(self):
+        if self.system == "Linux":
+            return "Unkown"
+        elif self.system == "Windows":
+            return subprocess.run(["echo", "%NUMBER_OF_PROCESSORS%"], capture_output=True, shell=True).stdout.decode("UTF-8") \
+                .split("\n")[0].split("\r")[0]
