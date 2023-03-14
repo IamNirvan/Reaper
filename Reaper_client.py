@@ -12,7 +12,7 @@ class Reaper_client(Reaper):
             data = sock.recv(1024)
             print(f"Received: {data}")
 
-        input()
+        input("Press any key to exit...")
 
 
 
